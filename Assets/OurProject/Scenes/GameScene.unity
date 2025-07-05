@@ -648,6 +648,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 877217840}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 877217843}
   m_SourcePrefab: {fileID: 100100000, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
 --- !u!1 &877217837 stripped
 GameObject:
@@ -711,7 +714,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 877217837}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 784d4fe6f60c03b4ea6c33da342d21d0, type: 3}
   m_Name: 
@@ -721,6 +724,31 @@ MonoBehaviour:
   moveX: 0
   normalSpeed: 6
   jumpSpeed: 450
+  xkaitensokudo: 10
+  ykaitensokudo: 10
+  upseigen: 290
+  downseigen: 70
+--- !u!114 &877217843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877217837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01ff8128596f74d49a8654e5834ea79a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveZ: 0
+  moveY: 0
+  moveX: 0
+  normalSpeed: 6
+  jumpSpeed: 450
+  dashSpeed: 1500
+  dashtime: 0.3
+  dashcool: 1.5
+  dashkyoka: 1
   xkaitensokudo: 10
   ykaitensokudo: 10
   upseigen: 290

@@ -1,6 +1,7 @@
+using System.Collections;
 using UnityEngine;
 
-public class idou14 : MonoBehaviour
+public class idou17 : MonoBehaviour
 {
     Animator animator;
     Rigidbody rb;
@@ -11,8 +12,13 @@ public class idou14 : MonoBehaviour
     [SerializeField] float moveX;
     [SerializeField, Tooltip("通常の移動速度")] float normalSpeed = 6f;
     [SerializeField, Tooltip("ジャンプ速度")] float jumpSpeed = 450f;
+    [SerializeField, Tooltip("ダッシュ力")] float dashSpeed = 1500f;
+    [SerializeField, Tooltip("ダッシュ時間")] float dashtime = 0.3f;
+    [SerializeField, Tooltip("ダッシュクールタイム")] float dashcool = 1.5f;
+    [SerializeField, Tooltip("ダッシュ許可")] bool dashkyoka = true;
 
     [Tooltip("移動方向")] Vector3 moveDirection = Vector3.zero;
+    [Tooltip("ダッシュ移動方向")] Vector3 dashhoukou = Vector3.zero;
     [Tooltip("開始位置")] Vector3 starpos;
     [Tooltip("回転")] Vector3 muki;
     [Tooltip("回転記憶")] Vector3 mukikioku;
@@ -57,6 +63,17 @@ public class idou14 : MonoBehaviour
 
         // 移動アニメーション
         animator.SetFloat("MoveSpeed", moveDirection.magnitude);
+
+        // ダッシュ
+        if (Input.GetButtonDown("Fire3") && dashkyoka == true)
+        {
+            dashhoukou = new Vector3(moveX, 0, moveZ).normalized;
+            rb.AddForce(transform.TransformDirection(dashhoukou) * dashSpeed, ForceMode.Impulse);
+            dashkyoka = false;
+
+            StartCoroutine(Dashowari());
+        }
+
         transform.eulerAngles = mukikioku;
 
         // 地面判定とジャンプ
@@ -98,5 +115,16 @@ public class idou14 : MonoBehaviour
 
         muki.z = 0;
         transform.eulerAngles = muki;
+    }
+
+    IEnumerator Dashowari()
+    {
+        // ダッシュ終わらせる
+        yield return new WaitForSeconds(dashtime);
+        rb.linearVelocity = Vector3.zero;
+
+        // ダッシュクールタイムだけ待機  
+        yield return new WaitForSeconds(dashcool);
+        dashkyoka = true;
     }
 }
