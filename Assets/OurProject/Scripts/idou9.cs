@@ -76,6 +76,8 @@ public class idou9 : MonoBehaviour
 
 
 
+//移動方向によりアニメーションの向き・停止決定
+
         if (zmoveZ > 0f || zmoveX > 0f)
         {
             if (zmoveZ > zmoveX)
