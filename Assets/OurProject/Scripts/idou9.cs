@@ -66,63 +66,140 @@ public class idou9 : MonoBehaviour
 
         this.transform.Translate(moveDirection.x, moveDirection.y, moveDirection.z);
 
+
         // 移動のアニメーション
         anim.SetFloat("MoveSpeed", moveDirection.magnitude);
 
         transform.eulerAngles = mukikioku;
+/*
+        //移動方向によりアニメーションの向き・停止決定
 
-                float zmoveZ = Mathf.Abs(moveDirection.z);
+
+
+        float zmoveZ = Mathf.Abs(moveDirection.z);
         float zmoveX = Mathf.Abs(moveDirection.x);
 
 
 
-//移動方向によりアニメーションの向き・停止決定
+        //移動方向によりアニメーションの向き・停止決定
+
+        anim.SetBool("Forward", false);
+        anim.SetBool("Back", false);
+        anim.SetBool("Right", false);
+        anim.SetBool("Left", false);
+        anim.SetBool("ForwardRight", false);
+        anim.SetBool("ForwardLeft", false);
+        anim.SetBool("BackRight", false);
+        anim.SetBool("BackLeft", false);
 
         if (zmoveZ > 0f || zmoveX > 0f)
         {
-            if (zmoveZ > zmoveX)
+            if (moveDirection.z >= 0.01f && moveDirection.x >= 0.01f)
             {
+                anim.SetBool("ForwardRight", true);
 
-                if (moveDirection.z >= 0f)
-                {
-                    anim.SetBool("Forward", true);
-                    anim.SetBool("Back", false);
-                    anim.SetBool("Right", false);
-                    anim.SetBool("Left", false);
-                }
-                else
-                {
-                    anim.SetBool("Forward", false);
-                    anim.SetBool("Back", true);
-                    anim.SetBool("Right", false);
-                    anim.SetBool("Left", false);
-                }
+                anim.SetBool("Forward", false);
+                anim.SetBool("Back", false);
+                anim.SetBool("Right", false);
+                anim.SetBool("Left", false);
+                //anim.SetBool("ForwardRight", false);
+                anim.SetBool("ForwardLeft", false);
+                anim.SetBool("BackRight", false);
+                anim.SetBool("BackLeft", false);
             }
-            else
+            else if (moveDirection.z >= 0.01f && moveDirection.x <= -0.01f)
             {
-                if (moveDirection.x >= 0)
-                {
-                    anim.SetBool("Forward", false);
-                    anim.SetBool("Back", false);
-                    anim.SetBool("Right", true);
-                    anim.SetBool("Left", false);
-                }
-                else
-                {
-                    anim.SetBool("Forward", false);
-                    anim.SetBool("Back", false);
-                    anim.SetBool("Right", false);
-                    anim.SetBool("Left", true);
-                }
+                anim.SetBool("ForwardLeft", true);
+
+                anim.SetBool("Forward", false);
+                anim.SetBool("Back", false);
+                anim.SetBool("Right", false);
+                anim.SetBool("Left", false);
+                anim.SetBool("ForwardRight", false);
+                //anim.SetBool("ForwardLeft", false);
+                anim.SetBool("BackRight", false);
+                anim.SetBool("BackLeft", false);
+            }
+            else if (moveDirection.z <= -0.01f && moveDirection.x >= 0.01f)
+            {
+                anim.SetBool("BackRight", true);
+
+                anim.SetBool("Forward", false);
+                anim.SetBool("Back", false);
+                anim.SetBool("Right", false);
+                anim.SetBool("Left", false);
+                anim.SetBool("ForwardRight", false);
+                anim.SetBool("ForwardLeft", false);
+                //anim.SetBool("BackRight", false);
+                anim.SetBool("BackLeft", false);
+            }
+            else if (moveDirection.z <= -0.01f && moveDirection.x <= -0.01f)
+            {
+                anim.SetBool("BackLeft", true);
+
+                anim.SetBool("Forward", false);
+                anim.SetBool("Back", false);
+                anim.SetBool("Right", false);
+                anim.SetBool("Left", false);
+                anim.SetBool("ForwardRight", false);
+                anim.SetBool("ForwardLeft", false);
+                anim.SetBool("BackRight", false);
+                //anim.SetBool("BackLeft", false);
+            }
+            else if (moveDirection.z >= 0.01f)
+            {
+                anim.SetBool("Forward", true);
+
+                //anim.SetBool("Forward", false);
+                anim.SetBool("Back", false);
+                anim.SetBool("Right", false);
+                anim.SetBool("Left", false);
+                anim.SetBool("ForwardRight", false);
+                anim.SetBool("ForwardLeft", false);
+                anim.SetBool("BackRight", false);
+                anim.SetBool("BackLeft", false);
+            }
+            else if (moveDirection.z <= -0.01f)
+            {
+                anim.SetBool("Back", true);
+
+                anim.SetBool("Forward", false);
+                //anim.SetBool("Back", false);
+                anim.SetBool("Right", false);
+                anim.SetBool("Left", false);
+                anim.SetBool("ForwardRight", false);
+                anim.SetBool("ForwardLeft", false);
+                anim.SetBool("BackRight", false);
+                anim.SetBool("BackLeft", false);
+            }
+            else if (moveDirection.x >= 0.01f)
+            {
+                anim.SetBool("Right", true);
+
+                anim.SetBool("Forward", false);
+                anim.SetBool("Back", false);
+                //anim.SetBool("Right", false);
+                anim.SetBool("Left", false);
+                anim.SetBool("ForwardRight", false);
+                anim.SetBool("ForwardLeft", false);
+                anim.SetBool("BackRight", false);
+                anim.SetBool("BackLeft", false);
+            }
+            else if (moveDirection.x <= -0.01f)
+            {
+                anim.SetBool("Left", true);
+
+                anim.SetBool("Forward", false);
+                anim.SetBool("Back", false);
+                anim.SetBool("Right", false);
+                //anim.SetBool("Left", false);
+                anim.SetBool("ForwardRight", false);
+                anim.SetBool("ForwardLeft", false);
+                anim.SetBool("BackRight", false);
+                anim.SetBool("BackLeft", false);
             }
         }
-        else
-        {
-            anim.SetBool("Forward", false);
-            anim.SetBool("Back", false);
-            anim.SetBool("Right", false);
-            anim.SetBool("Left", false);
-        }
+*/
 
         // マウス向き
 
