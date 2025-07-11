@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d985a021abc1a12429eb37eb28115d63, type: 3}
+  m_Name: Player 1
+  m_EditorClassIdentifier: 
+  NAME: "\u4E3B\u4EBA\u516C\uFF11"
+  MAXHP: 1300
+  MAXMP: 150
+  ATK: 800
+  DEF: 350
+  INT: 700
+  RES: 250
+  AGI: 350
+  LV: 1
+  GETEXP: 1
+  GETGOLD: 1
