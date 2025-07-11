@@ -354,31 +354,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35e514d1b025fe24ab023f2f03d55280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &398670564
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 398670549}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51e1fee55b3c8744ea372ec46b494792, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveZ: 0
-  moveY: 0
-  moveX: 0
-  normalSpeed: 6
-  jumpSpeed: 450
-  dashSpeed: 3
-  dashtime: 0.3
-  dashcool: 1.5
-  dashkyoka: 1
-  xkaitensokudo: 10
-  ykaitensokudo: 10
-  upseigen: 290
-  downseigen: 70
 --- !u!1 &722833351
 GameObject:
   m_ObjectHideFlags: 0
@@ -2890,9 +2865,6 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2036252902937254030, guid: 9fec696ccaa923a478b60d871acccc09, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 398670564}
     - targetCorrespondingSourceObject: {fileID: 2036252902937254030, guid: 9fec696ccaa923a478b60d871acccc09, type: 3}
       insertIndex: -1
       addedObject: {fileID: 398670563}
