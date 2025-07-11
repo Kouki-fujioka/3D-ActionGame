@@ -1,4 +1,4 @@
-﻿using RPGCharacterAnims.Actions;
+using RPGCharacterAnims.Actions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -66,6 +66,7 @@ public class idou21 : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         startpos = transform.position;
+
     }
 
 
