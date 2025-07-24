@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class CharaDamage : MonoBehaviour, IDamageable
 {
     //シリアル化している。charadataのMazokusoldierを指定。
     [SerializeField] private charadata charadata;
+    [SerializeField] Slider Slider;
     int HP;
 
     void Start()
@@ -11,6 +13,7 @@ public class CharaDamage : MonoBehaviour, IDamageable
         //charadataがnullでないことを確認
         if (charadata != null)
         {
+            Slider.value = 1;
             //charadataの最大HPを代入。
             HP = charadata.MAXHP;
         }
@@ -25,6 +28,7 @@ public class CharaDamage : MonoBehaviour, IDamageable
         {
             // PlayerのATKからMazokusoldierのDEFを引いた値をHPから引く
             HP -= value - charadata.DEF;
+            Slider.value = (float)HP / (float)charadata.MAXHP;
         }
 
 
