@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
 public class idou17 : MonoBehaviour
@@ -10,34 +10,34 @@ public class idou17 : MonoBehaviour
     [SerializeField] float moveZ;
     [SerializeField] float moveY;
     [SerializeField] float moveX;
-    [SerializeField, Tooltip("’Êí‚ÌˆÚ“®‘¬“x")] float normalSpeed = 6f;
-    [SerializeField, Tooltip("ƒWƒƒƒ“ƒv‘¬“x")] float jumpSpeed = 450f;
-    [SerializeField, Tooltip("ƒ_ƒbƒVƒ…—Í")] float dashSpeed = 1500f;
-    [SerializeField, Tooltip("ƒ_ƒbƒVƒ…ŠÔ")] float dashtime = 0.3f;
-    [SerializeField, Tooltip("ƒ_ƒbƒVƒ…ƒN[ƒ‹ƒ^ƒCƒ€")] float dashcool = 1.5f;
-    [SerializeField, Tooltip("ƒ_ƒbƒVƒ…‹–‰Â")] bool dashkyoka = true;
+    [SerializeField, Tooltip("é€šå¸¸ã®ç§»å‹•é€Ÿåº¦")] float normalSpeed = 6f;
+    [SerializeField, Tooltip("ã‚¸ãƒ£ãƒ³ãƒ—é€Ÿåº¦")] float jumpSpeed = 450f;
+    [SerializeField, Tooltip("ãƒ€ãƒƒã‚·ãƒ¥åŠ›")] float dashSpeed = 1500f;
+    [SerializeField, Tooltip("ãƒ€ãƒƒã‚·ãƒ¥æ™‚é–“")] float dashtime = 0.3f;
+    [SerializeField, Tooltip("ãƒ€ãƒƒã‚·ãƒ¥ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ ")] float dashcool = 1.5f;
+    [SerializeField, Tooltip("ãƒ€ãƒƒã‚·ãƒ¥è¨±å¯")] bool dashkyoka = true;
 
-    [Tooltip("ˆÚ“®•ûŒü")] Vector3 moveDirection = Vector3.zero;
-    [Tooltip("ƒ_ƒbƒVƒ…ˆÚ“®•ûŒü")] Vector3 dashhoukou = Vector3.zero;
-    [Tooltip("ŠJnˆÊ’u")] Vector3 starpos;
-    [Tooltip("‰ñ“]")] Vector3 muki;
-    [Tooltip("‰ñ“]‹L‰¯")] Vector3 mukikioku;
-    [Tooltip("ŒõŒvZ")] Vector3 raykeisan;
+    [Tooltip("ç§»å‹•æ–¹å‘")] Vector3 moveDirection = Vector3.zero;
+    [Tooltip("ãƒ€ãƒƒã‚·ãƒ¥ç§»å‹•æ–¹å‘")] Vector3 dashhoukou = Vector3.zero;
+    [Tooltip("é–‹å§‹ä½ç½®")] Vector3 starpos;
+    [Tooltip("å›è»¢")] Vector3 muki;
+    [Tooltip("å›è»¢è¨˜æ†¶")] Vector3 mukikioku;
+    [Tooltip("å…‰è¨ˆç®—")] Vector3 raykeisan;
 
-    [Tooltip("ƒ}ƒEƒXˆÚ“®—Êx")] float mx;
-    [Tooltip("ƒ}ƒEƒXˆÚ“®—Êy")] float my;
-    [SerializeField, Tooltip("x‰ñ“]‘¬“x")] float xkaitensokudo = 10f;
-    [SerializeField, Tooltip("y‰ñ“]‘¬“x")] float ykaitensokudo = 10f;
+    [Tooltip("ãƒã‚¦ã‚¹ç§»å‹•é‡x")] float mx;
+    [Tooltip("ãƒã‚¦ã‚¹ç§»å‹•é‡y")] float my;
+    [SerializeField, Tooltip("xå›è»¢é€Ÿåº¦")] float xkaitensokudo = 10f;
+    [SerializeField, Tooltip("yå›è»¢é€Ÿåº¦")] float ykaitensokudo = 10f;
 
-    [SerializeField, Tooltip("ãŒÀŠEŠp“x")] float upseigen = 290f;
-    [SerializeField, Tooltip("‰ºŒÀŠEŠp“x")] float downseigen = 70f;
+    [SerializeField, Tooltip("ä¸Šé™ç•Œè§’åº¦")] float upseigen = 290f;
+    [SerializeField, Tooltip("ä¸‹é™ç•Œè§’åº¦")] float downseigen = 70f;
 
     void Start()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
 
-        // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğ”ñ•\¦‚É‚µAˆÊ’u‚ğŒÅ’è
+        // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’éè¡¨ç¤ºã«ã—ã€ä½ç½®ã‚’å›ºå®š
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -46,25 +46,25 @@ public class idou17 : MonoBehaviour
 
     void Update()
     {
-        // ˆÚ“®İ’è
+        // ç§»å‹•è¨­å®š
         muki = transform.eulerAngles;
         mukikioku = transform.eulerAngles;
         muki.x = 0f;
         muki.z = 0f;
         transform.eulerAngles = muki;
 
-        // ‘OŒãˆÚ“®
+        // å‰å¾Œç§»å‹•
         moveZ = (Input.GetAxis("Vertical"));
-        // ¶‰EˆÚ“®
+        // å·¦å³ç§»å‹•
         moveX = (Input.GetAxis("Horizontal"));
 
         moveDirection = new Vector3(moveX, 0, moveZ).normalized * normalSpeed * Time.deltaTime;
         this.transform.Translate(moveDirection.x, moveDirection.y, moveDirection.z);
 
-        // ˆÚ“®ƒAƒjƒ[ƒVƒ‡ƒ“
+        // ç§»å‹•ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
         animator.SetFloat("MoveSpeed", moveDirection.magnitude);
 
-        // ƒ_ƒbƒVƒ…
+        // ãƒ€ãƒƒã‚·ãƒ¥
         if (Input.GetButtonDown("Fire3") && dashkyoka == true)
         {
             dashhoukou = new Vector3(moveX, 0, moveZ).normalized;
@@ -76,7 +76,7 @@ public class idou17 : MonoBehaviour
 
         transform.eulerAngles = mukikioku;
 
-        // ’n–Ê”»’è‚ÆƒWƒƒƒ“ƒv
+        // åœ°é¢åˆ¤å®šã¨ã‚¸ãƒ£ãƒ³ãƒ—
         raykeisan = transform.position;
         raykeisan.y += 0.5f;
 
@@ -88,7 +88,7 @@ public class idou17 : MonoBehaviour
             }
         }
 
-        // ƒ}ƒEƒXŒü‚«
+        // ãƒã‚¦ã‚¹å‘ã
         mx = Input.GetAxis("Mouse X");
         my = Input.GetAxis("Mouse Y");
 
@@ -119,11 +119,11 @@ public class idou17 : MonoBehaviour
 
     IEnumerator Dashowari()
     {
-        // ƒ_ƒbƒVƒ…I‚í‚ç‚¹‚é
+        // ãƒ€ãƒƒã‚·ãƒ¥çµ‚ã‚ã‚‰ã›ã‚‹
         yield return new WaitForSeconds(dashtime);
         rb.linearVelocity = Vector3.zero;
 
-        // ƒ_ƒbƒVƒ…ƒN[ƒ‹ƒ^ƒCƒ€‚¾‚¯‘Ò‹@  
+        // ãƒ€ãƒƒã‚·ãƒ¥ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ ã ã‘å¾…æ©Ÿ  
         yield return new WaitForSeconds(dashcool);
         dashkyoka = true;
     }
