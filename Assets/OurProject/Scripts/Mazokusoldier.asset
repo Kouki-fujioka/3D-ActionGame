@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mazokusoldier
   m_EditorClassIdentifier: 
   NAME: "\u9B54\u65CF\u4E00\u822C\u5175"
-  MAXHP: 1000
+  MAXHP: 843
   MAXMP: 50
   ATK: 500
   DEF: 300
