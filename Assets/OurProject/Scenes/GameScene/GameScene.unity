@@ -2508,6 +2508,7 @@ GameObject:
   - component: {fileID: 3756101607368349940}
   - component: {fileID: 5774397759712041680}
   - component: {fileID: 1771006114469621810}
+  - component: {fileID: 6374664032394362103}
   m_Layer: 0
   m_Name: HumanM_BodyMesh
   m_TagString: Untagged
@@ -2515,6 +2516,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &6374664032394362103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6374664032394362102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e2249d50275cd54ba65b860cff5c213, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPlayer: {fileID: 0}
+  charadata: {fileID: 0}
 --- !u!4 &6443319906570984164
 Transform:
   m_ObjectHideFlags: 0
