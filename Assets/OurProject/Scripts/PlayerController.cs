@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class idou34 : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     [Header("Components")]
     private Animator animator;
@@ -11,7 +11,6 @@ public class idou34 : MonoBehaviour
     [SerializeField] private float normalSpeed = 6f;
     [SerializeField] private float attackSpeed = 2f;
     [SerializeField] private float jumpForce = 450f;
-
     private Vector3 moveDirection = Vector3.zero;
     private bool isGrounded = true;
 
@@ -26,7 +25,6 @@ public class idou34 : MonoBehaviour
     [SerializeField] private float rotateSpeedY = 10f;
     [SerializeField] private float angleLimitUp = 290f;
     [SerializeField] private float angleLimitDown = 70f;
-
     private float mouseX;
     private float mouseY;
 
@@ -49,7 +47,7 @@ public class idou34 : MonoBehaviour
     private TrailRenderer fireTrail;
     private ParticleSystem fireEffect;
 
-    private void Start()
+    private void Awake()
     {
         animator = GetComponent<Animator>();
         rigidbody = GetComponent<Rigidbody>();
@@ -58,13 +56,13 @@ public class idou34 : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         trail = trailObject.GetComponent<TrailRenderer>();
-        trail.emitting = false;
-
-        fireEffect = fireAttackObject.GetComponent<ParticleSystem>();
-        fireEffect.Stop();
+        trail.emitting = false; // トレイル描画停止
 
         fireTrail = fireTrailObject.GetComponent<TrailRenderer>();
-        fireTrail.emitting = false;
+        fireTrail.emitting = false; // トレイル描画停止
+
+        fireEffect = fireAttackObject.GetComponent<ParticleSystem>();
+        fireEffect.Stop();  // パーティクル再生停止
     }
 
     private void Update()
@@ -78,19 +76,27 @@ public class idou34 : MonoBehaviour
         HandleRotation();
     }
 
+    /// <summary>
+    /// 移動, アニメーション制御
+    /// </summary>
+    /// <returns></returns>
     private void HandleMovement()
     {
-        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")); // 移動方向ベクトル
 
         float speed = attackState == 0 ? normalSpeed : attackSpeed;
-        moveDirection = input.normalized * speed * Time.deltaTime;
+        moveDirection = input.normalized * speed * Time.deltaTime;  // 移動ベクトル
 
-        transform.Translate(moveDirection);
+        transform.Translate(moveDirection); // ローカル座標分 (moveDirection) 移動
 
         animator.SetFloat("MoveSpeed", moveDirection.magnitude);
         UpdateMoveAnimation(input);
     }
 
+    /// <summary>
+    /// アニメーション更新
+    /// </summary>
+    /// <param name="input"></param>
     private void UpdateMoveAnimation(Vector3 input)
     {
         animator.SetBool("Forward", input.z > 0);
@@ -99,22 +105,21 @@ public class idou34 : MonoBehaviour
         animator.SetBool("Left", input.x < 0);
     }
 
+    /// <summary>
+    /// 攻撃制御
+    /// </summary>
     private void HandleAttack()
     {
         if (!canAttack) return;
 
-        // Fire attack
-        if (comboAvailable && Input.GetMouseButtonDown(1))
+        // First attack (左クリック)
+        if (!comboAvailable && attackState == 0 && Input.GetMouseButtonDown(0))
         {
             rigidbody.linearVelocity = Vector3.zero;
-            animator.SetFloat("Attack", 10f);
-            canAttack = false;
-            comboAvailable = false;
-            fireEffect.Play();
-            return;
+            animator.SetFloat("Attack", 1f);
         }
 
-        // Combo attack
+        // Combo attack (左クリック)
         if (comboAvailable && Input.GetMouseButtonDown(0) && attackState < 4)
         {
             rigidbody.linearVelocity = Vector3.zero;
@@ -123,19 +128,27 @@ public class idou34 : MonoBehaviour
             animator.SetFloat("Attack", attackState);
         }
 
-        // First attack
-        if (!comboAvailable && attackState == 0 && Input.GetMouseButtonDown(0))
+        // Fire attack (右クリック)
+        if (comboAvailable && Input.GetMouseButtonDown(1))
         {
             rigidbody.linearVelocity = Vector3.zero;
-            animator.SetFloat("Attack", 1f);
+            animator.SetFloat("Attack", 10f);
+            canAttack = false;
+            comboAvailable = false;
+            fireEffect.Play();  // パーティクル再生
+            return;
         }
     }
 
+    /// <summary>
+    /// ダッシュ制御
+    /// </summary>
     private void HandleDash()
     {
+        // ダッシュ (左シフト)
         if (Input.GetButtonDown("Fire3") && canDash)
         {
-            Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
+            Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;  // 移動方向ベクトル (正規化 → 距離調整)
             rigidbody.AddForce(transform.TransformDirection(direction) * dashPower, ForceMode.Impulse);
             canDash = false;
             StartCoroutine(DashRoutine());
