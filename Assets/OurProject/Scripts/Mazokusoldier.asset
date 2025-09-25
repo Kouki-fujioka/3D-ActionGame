@@ -23,8 +23,8 @@ MonoBehaviour:
   LV: 1
   GETEXP: 10
   GETGOLD: 5
-  ShortAttackRange: 0
-  Enemytime: 0
+  ShortAttackRange: 2
+  Enemytime: 0.5
   Haikaikyori: 15
   Haikaikankaku: 3
   Haikaimin: 3
