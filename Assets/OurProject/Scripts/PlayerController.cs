@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float rotateSpeedY = 10f;
     [SerializeField] private float angleLimitUp = 290f;
     [SerializeField] private float angleLimitDown = 70f;
+    private float pitch = 0f;
+    private float yaw = 0f;
     private float mouseX;
     private float mouseY;
 
@@ -42,7 +44,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject trailObject;
     [SerializeField] private GameObject fireAttackObject;
     [SerializeField] private GameObject fireTrailObject;
-
     private TrailRenderer trail;
     private TrailRenderer fireTrail;
     private ParticleSystem fireEffect;
@@ -84,10 +85,17 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")); // 移動方向ベクトル
 
-        float speed = attackState == 0 ? normalSpeed : attackSpeed;
-        moveDirection = input.normalized * speed * Time.deltaTime;  // 移動ベクトル
+        Vector3 forward = Camera.main.transform.forward;    // カメラ前方向
+        forward.y = 0;  // 上下成分削除
+        forward.Normalize();
+        Vector3 right = Camera.main.transform.right;    // カメラ右方向
+        right.y = 0;    // 上下成分削除
+        right.Normalize();
 
-        transform.Translate(moveDirection); // ローカル座標分 (moveDirection) 移動
+        float speed = attackState == 0 ? normalSpeed : attackSpeed;
+        moveDirection = (forward * input.z + right * input.x).normalized * speed * Time.deltaTime;  // 移動ベクトル
+
+        transform.Translate(moveDirection, Space.World);    // 移動ベクトル分 (moveDirection) 移動
 
         animator.SetFloat("MoveSpeed", moveDirection.magnitude);
         UpdateMoveAnimation(input);
@@ -149,67 +157,64 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Fire3") && canDash)
         {
             Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;  // 移動方向ベクトル (正規化 → 距離調整)
+            // Transform.TransformDirection(direction): ローカル方向 (プレイヤ正面) → ワールド方向
             rigidbody.AddForce(transform.TransformDirection(direction) * dashPower, ForceMode.Impulse);
             canDash = false;
             StartCoroutine(DashRoutine());
         }
     }
 
+    /// <summary>
+    /// ダッシュ時間管理 (並列処理)
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator DashRoutine()
     {
-        yield return new WaitForSeconds(dashDuration);
+        yield return new WaitForSeconds(dashDuration);  // ダッシュ持続時間待機
         rigidbody.linearVelocity = Vector3.zero;
 
-        yield return new WaitForSeconds(dashCooldown);
+        yield return new WaitForSeconds(dashCooldown);  // ダッシュクールタイム待機
         canDash = true;
     }
 
+    /// <summary>
+    /// ジャンプ制御
+    /// </summary>
     private void HandleJump()
     {
-        Vector3 origin = transform.position + Vector3.up * 0.5f;
+        Vector3 origin = transform.position + Vector3.up * 0.5f;    // レイ発射位置
 
-        if (Physics.SphereCast(origin, 0.3f, Vector3.down, out RaycastHit hit, 0.6f))
+        if (Physics.SphereCast(origin, 0.3f, Vector3.down, out RaycastHit hit, 0.6f))   // レイヒット (接地) 時
         {
             isGrounded = true;
             animator.SetBool("Jump", false);
 
             if (Input.GetButtonDown("Jump"))
             {
-                rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);  // ジャンプ
             }
         }
-        else
+        else   // 空中
         {
             isGrounded = false;
             animator.SetBool("Jump", true);
         }
     }
 
+    /// <summary>
+    /// 回転制御
+    /// </summary>
     private void HandleRotation()
     {
-        mouseX = Input.GetAxis("Mouse X") * rotateSpeedX * Time.deltaTime;
-        mouseY = Input.GetAxis("Mouse Y") * rotateSpeedY * Time.deltaTime;
+        mouseX = Input.GetAxis("Mouse X") * rotateSpeedX * Time.deltaTime;  // 左右回転量 (右方向 → 正)
+        mouseY = Input.GetAxis("Mouse Y") * rotateSpeedY * Time.deltaTime;  // 上下回転量 (上方向 → 正)
 
-        transform.Rotate(-mouseY, mouseX, 0);
+        yaw += mouseX;
+        pitch -= mouseY;    // 上方向 → 負
+        pitch = Mathf.Clamp(pitch, -angleLimitUp, angleLimitDown);  // 上下回転制限
 
-        Vector3 rotation = transform.eulerAngles;
-        if (rotation.x > angleLimitDown)
-        {
-            if (rotation.x > 180f && angleLimitUp > rotation.x)
-                rotation.x = angleLimitUp;
-            else
-                rotation.x = angleLimitDown;
-        }
-
-        rotation.z = 0f;
-        transform.eulerAngles = rotation;
-    }
-
-    private IEnumerator ComboEndRoutine()
-    {
-        yield return new WaitForSeconds(comboEndDelay);
-        canAttack = true;
-        Debug.Log("Combo ended");
+        transform.rotation = Quaternion.Euler(0f, yaw, 0f);  // プレイヤ, カメラ → 横回転
+        Camera.main.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);  // カメラ → 縦回転
     }
 
     #region AnimationEvents
@@ -246,6 +251,19 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// コンボ終了ディレイ管理 (並列処理)
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ComboEndRoutine()
+    {
+        yield return new WaitForSeconds(comboEndDelay); // コンボ終了ディレイ待機
+        canAttack = true;
+    }
+
+    /// <summary>
+    /// IK 用コールバック
+    /// </summary>
     private void OnAnimatorIK()
     {
         if (!isGrounded) return;
@@ -256,16 +274,28 @@ public class PlayerController : MonoBehaviour
         ApplyFootIK(AvatarIKGoal.LeftFoot, leftFootTarget, moveSpeed);
     }
 
+    /// <summary>
+    /// IK 設定
+    /// </summary>
+    /// <param name="foot"></param>
+    /// <param name="footTarget"></param>
+    /// <param name="moveSpeed"></param>
     private void ApplyFootIK(AvatarIKGoal foot, Transform footTarget, float moveSpeed)
     {
-        if (Physics.Raycast(footTarget.position, Vector3.down, out RaycastHit hit, 1f))
+        if (Physics.Raycast(footTarget.position, Vector3.down, out RaycastHit hit, 1f)) // レイヒット (接地) 時
         {
+            // 足位置補正 (空中 → 地面)
             Vector3 adjustedPos = new Vector3(footTarget.position.x, footTarget.position.y - hit.distance + 0.12f, footTarget.position.z);
             footTarget.position = adjustedPos;
 
-            animator.SetIKPositionWeight(foot, moveSpeed == 0 ? 1f : 0.02f);
-            animator.SetIKRotationWeight(foot, 1f);
+            // IK 強度設定
+            animator.SetIKPositionWeight(foot, moveSpeed == 0 ? 1f : 0.02f);    // 停止時 → 位置地面固定 (IK 強度 = 1)
+            animator.SetIKRotationWeight(foot, 1f); // 回転方向地面固定 (IK 強度 = 1)
+
+            // IK 位置設定
             animator.SetIKPosition(foot, footTarget.position);
+
+            // IK 回転設定
             animator.SetIKRotation(foot, footTarget.rotation);
         }
     }
