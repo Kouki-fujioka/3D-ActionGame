@@ -6,6 +6,6 @@ public interface ICharaAttack
 {
     public int HitCount();
     public void HitCountDown();
-    public bool Attackimekanshi();
+    public bool Attacktimekanshi();
 
 }
