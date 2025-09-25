@@ -1,482 +1,259 @@
-using RPGCharacterAnims.Actions;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using Unity.VisualScripting;
+﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
-
-using static UnityEditor.PlayerSettings;
 
 public class idou34 : MonoBehaviour
 {
-    Animator anim;
-    Rigidbody zyuuryoku;
-    RaycastHit zimen;
+    [Header("Components")]
+    private Animator animator;
+    private Rigidbody rigidbody;
 
+    [Header("Movement Settings")]
+    [SerializeField] private float normalSpeed = 6f;
+    [SerializeField] private float attackSpeed = 2f;
+    [SerializeField] private float jumpForce = 450f;
 
-    [SerializeField] float moveZ;
-    [SerializeField] float moveY;
-    [SerializeField] float moveX;
+    private Vector3 moveDirection = Vector3.zero;
+    private bool isGrounded = true;
 
-    [SerializeField, Tooltip("通常の移動速度")] float normalSpeed = 6f;
-    [SerializeField, Tooltip("攻撃時の移動速度")] float AttackSpeed = 2f;
-    [SerializeField, Tooltip("ジャンプ速度")] float jumpSpeed = 450f;
+    [Header("Dash Settings")]
+    [SerializeField] private float dashPower = 3f;
+    [SerializeField] private float dashDuration = 0.3f;
+    [SerializeField] private float dashCooldown = 1.5f;
+    private bool canDash = true;
 
-    [SerializeField, Tooltip("地面ついてる")] bool Groundtuku = true;
+    [Header("Mouse Settings")]
+    [SerializeField] private float rotateSpeedX = 10f;
+    [SerializeField] private float rotateSpeedY = 10f;
+    [SerializeField] private float angleLimitUp = 290f;
+    [SerializeField] private float angleLimitDown = 70f;
 
-    Transform GroundObject;
-     [Tooltip("地面ターゲット")] Vector3 Groundtarget;
-    Vector3 rayiti;
-    float raydistance;
-    Vector3 rayhoukou = Vector3.down;
-    RaycastHit rayzyouhou;
+    private float mouseX;
+    private float mouseY;
 
-    [SerializeField, Tooltip("ダッシュ力")] float dashSpeed = 3f;
-    [SerializeField, Tooltip("ダッシュ時間")] float dashtime = 0.3f;
-    [SerializeField, Tooltip("ダッシュクールタイム")] float dashcool = 1.5f;
-    [SerializeField, Tooltip("ダッシュ許可")] bool dashkyoka = true;
+    [Header("Attack Settings")]
+    [SerializeField] private float comboEndDelay = 1f;
+    private float attackState;
+    private bool canAttack = true;
+    private bool comboAvailable = false;
 
+    [Header("IK Settings")]
+    [SerializeField] private Transform rightFootTarget;
+    [SerializeField] private Transform leftFootTarget;
 
-    [Tooltip("通常移動方向")] Vector3 moveDirection = Vector3.zero;
-    [Tooltip("ダッシュ移動方向")] Vector3 dashhoukou = Vector3.zero;
+    [Header("Effects")]
+    [SerializeField] private GameObject trailObject;
+    [SerializeField] private GameObject fireAttackObject;
+    [SerializeField] private GameObject fireTrailObject;
 
+    private TrailRenderer trail;
+    private TrailRenderer fireTrail;
+    private ParticleSystem fireEffect;
 
-
-    [Tooltip("開始位置")] Vector3 startpos;
-    [Tooltip("回転")] Vector3 muki;
-    [Tooltip("回転記憶")] Vector3 mukikioku;
-    [Tooltip("光計算")] Vector3 raykeisan;
-    [Tooltip("光当たった位置")] Vector3 rayhititi;
-
-
-
-
-    [Tooltip("マウス移動量x")] float mx;
-    [Tooltip("マウス移動量y")] float my;
-
-    [SerializeField, Tooltip("x回転速度")] float xkaitensokudo = 10f;
-    [SerializeField, Tooltip("y回転速度")] float ykaitensokudo = 10f;
-
-    [SerializeField, Tooltip("上限界角度")] float upseigen = 290f;
-    [SerializeField, Tooltip("下限界角度")] float downseigen = 70f;
-
-    [SerializeField, Tooltip("攻撃")] float Attack;
-    [SerializeField, Tooltip("コンボ許容")] bool Combo= false;
-    [SerializeField, Tooltip("攻撃可能")] bool Attackdekiru = true;
-    [SerializeField, Tooltip("コンボ終了時のスキの時間")] float ComboEndtime = 1f;
-
-    [SerializeField] Transform FootObjectR;
-    [SerializeField] Transform FootObjectL;
-    [SerializeField] GameObject TrailObject;
-    [SerializeField] GameObject FireAttack1Object;
-    [SerializeField] GameObject FireAttack2Object;
-
-    [Tooltip("ファイアアタック1のパーティクル")] ParticleSystem Fire1;
-    [Tooltip("軌跡")] TrailRenderer Kiseki;
-    [Tooltip("軌跡2")] TrailRenderer Kiseki2;
-
-    void Start()
+    private void Start()
     {
-        anim = GetComponent<Animator>(); //animatorのコンポーネントを取得
-        zyuuryoku = GetComponent<Rigidbody>(); //Rigidbodyのコンポーネントを取得
+        animator = GetComponent<Animator>();
+        rigidbody = GetComponent<Rigidbody>();
 
-        // マウスカーソルを非表示にし、位置を固定
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
+        trail = trailObject.GetComponent<TrailRenderer>();
+        trail.emitting = false;
 
-        Kiseki = TrailObject.GetComponent<TrailRenderer>();
-        Kiseki.emitting = false;
+        fireEffect = fireAttackObject.GetComponent<ParticleSystem>();
+        fireEffect.Stop();
 
-        Fire1 = FireAttack1Object.GetComponent<ParticleSystem>();
-        Fire1.Stop();
-
-        Kiseki2 = FireAttack2Object.GetComponent<TrailRenderer>();
-        Kiseki2.emitting = false;
-
-        startpos = transform.position;
+        fireTrail = fireTrailObject.GetComponent<TrailRenderer>();
+        fireTrail.emitting = false;
     }
 
-    void Update()
+    private void Update()
     {
-        anim = GetComponent<Animator>();
-        Attack = anim.GetFloat("Attack");
+        attackState = animator.GetFloat("Attack");
 
-        // 移動設定
+        HandleMovement();
+        HandleAttack();
+        HandleDash();
+        HandleJump();
+        HandleRotation();
+    }
 
-        muki = transform.eulerAngles;
-        mukikioku = transform.eulerAngles;
-        muki.x = 0f;
+    private void HandleMovement()
+    {
+        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
-        muki.z = 0f;
+        float speed = attackState == 0 ? normalSpeed : attackSpeed;
+        moveDirection = input.normalized * speed * Time.deltaTime;
 
-        transform.eulerAngles = muki;
+        transform.Translate(moveDirection);
 
-        //前後移動
-        moveZ = (Input.GetAxis("Vertical"));
-        //左右移動
-        moveX = (Input.GetAxis("Horizontal"));
+        animator.SetFloat("MoveSpeed", moveDirection.magnitude);
+        UpdateMoveAnimation(input);
+    }
 
-        //移動計算
+    private void UpdateMoveAnimation(Vector3 input)
+    {
+        animator.SetBool("Forward", input.z > 0);
+        animator.SetBool("Back", input.z < 0);
+        animator.SetBool("Right", input.x > 0);
+        animator.SetBool("Left", input.x < 0);
+    }
 
-        if (Attack == 0f)
+    private void HandleAttack()
+    {
+        if (!canAttack) return;
+
+        // Fire attack
+        if (comboAvailable && Input.GetMouseButtonDown(1))
         {
-            moveDirection = new Vector3(moveX, 0, moveZ).normalized * normalSpeed * Time.deltaTime;
-        }
-        else
-        {
-            moveDirection = new Vector3(moveX, 0, moveZ).normalized * AttackSpeed * Time.deltaTime;
-        }
-
-        this.transform.Translate(moveDirection.x, moveDirection.y, moveDirection.z);
-
-        float zmoveZ = Mathf.Abs(moveDirection.z);
-        float zmoveX = Mathf.Abs(moveDirection.x);
-
-
-        //移動方向によりアニメーションの向き・停止決定
-
-        anim.SetFloat("MoveSpeed", moveDirection.magnitude);
-
-        if (zmoveZ > 0f || zmoveX > 0f)
-        {
-            if (zmoveZ > zmoveX)
-            {
-
-                if (moveDirection.z >= 0f)
-                {
-                    anim.SetBool("Forward", true);
-                    anim.SetBool("Back", false);
-                    anim.SetBool("Right", false);
-                    anim.SetBool("Left", false);
-                }
-                else
-                {
-                    anim.SetBool("Forward", false);
-                    anim.SetBool("Back", true);
-                    anim.SetBool("Right", false);
-                    anim.SetBool("Left", false);
-                }
-            }
-            else
-            {
-                if (moveDirection.x >= 0)
-                {
-                    anim.SetBool("Forward", false);
-                    anim.SetBool("Back", false);
-                    anim.SetBool("Right", true);
-                    anim.SetBool("Left", false);
-                }
-                else
-                {
-                    anim.SetBool("Forward", false);
-                    anim.SetBool("Back", false);
-                    anim.SetBool("Right", false);
-                    anim.SetBool("Left", true);
-                }
-            }
-        }
-        else
-        {
-            anim.SetBool("Forward", false);
-            anim.SetBool("Back", false);
-            anim.SetBool("Right", false);
-            anim.SetBool("Left", false);
+            rigidbody.linearVelocity = Vector3.zero;
+            animator.SetFloat("Attack", 10f);
+            canAttack = false;
+            comboAvailable = false;
+            fireEffect.Play();
+            return;
         }
 
-        //攻撃のアニメーション
-        if (Attackdekiru == true)
+        // Combo attack
+        if (comboAvailable && Input.GetMouseButtonDown(0) && attackState < 4)
         {
-            if (Combo == true)
-            {
-                //通常攻撃1回以上時に右クリックでのファイアアタック処理。
-                if (Input.GetMouseButtonDown(1))
-                {
-                    //攻撃時にダッシュとジャンプによる移動停止。
-
-                    zyuuryoku.linearVelocity = Vector3.zero;
-
-                    anim.SetFloat("Attack", 10f);
-
-                    Attackdekiru = false;
-                    Combo = false;
-                    Fire1 = FireAttack1Object.GetComponent<ParticleSystem>();
-                    Fire1.Play();
-
-                    return;
-                }
-
-                //コンボ中の通常攻撃処理。
-                if (Input.GetMouseButtonDown(0))
-                {
-                   if(Attack < 4 )
-                    {
-                        //攻撃時にダッシュとジャンプによる移動停止。
-
-                        zyuuryoku.linearVelocity = Vector3.zero;
-                        Combo = false;
-                        Attack += 1f;
-                        anim.SetFloat("Attack", Attack);
-
-                    }
-                }
-            }
-            else
-            {
-                //通常攻撃の最初の1回の処理。
-                if (Attack == 0)
-                {
-
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        //攻撃時にダッシュとジャンプによる移動停止。
-                        zyuuryoku = GetComponent<Rigidbody>(); //Rigidbodyのコンポーネントを取得
-                        zyuuryoku.linearVelocity = Vector3.zero;
-                        anim.SetFloat("Attack", 1f);
-                    }
-                }
-
-            }
-        }
-        // ダッシュ
-
-        if (Input.GetButtonDown("Fire3") && dashkyoka == true)
-        {
-
-            dashhoukou = new Vector3(moveX, 0, moveZ).normalized;
-            zyuuryoku.AddForce(transform.TransformDirection(dashhoukou) * dashSpeed, ForceMode.Impulse);
-            dashkyoka = false;
-
-            StartCoroutine(Dashowari());
+            rigidbody.linearVelocity = Vector3.zero;
+            comboAvailable = false;
+            attackState += 1f;
+            animator.SetFloat("Attack", attackState);
         }
 
-        transform.eulerAngles = mukikioku;
-
-        // 地面判定とジャンプ
-
-        raykeisan = transform.position;
-
-        raykeisan.y += 0.5f;
-
-        if (Physics.SphereCast(raykeisan, 0.3f, Vector3.down, out zimen, 0.6f))
+        // First attack
+        if (!comboAvailable && attackState == 0 && Input.GetMouseButtonDown(0))
         {
-            Groundtuku = true;
-            anim.SetBool("Jump", false);
+            rigidbody.linearVelocity = Vector3.zero;
+            animator.SetFloat("Attack", 1f);
+        }
+    }
+
+    private void HandleDash()
+    {
+        if (Input.GetButtonDown("Fire3") && canDash)
+        {
+            Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
+            rigidbody.AddForce(transform.TransformDirection(direction) * dashPower, ForceMode.Impulse);
+            canDash = false;
+            StartCoroutine(DashRoutine());
+        }
+    }
+
+    private IEnumerator DashRoutine()
+    {
+        yield return new WaitForSeconds(dashDuration);
+        rigidbody.linearVelocity = Vector3.zero;
+
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
+    }
+
+    private void HandleJump()
+    {
+        Vector3 origin = transform.position + Vector3.up * 0.5f;
+
+        if (Physics.SphereCast(origin, 0.3f, Vector3.down, out RaycastHit hit, 0.6f))
+        {
+            isGrounded = true;
+            animator.SetBool("Jump", false);
 
             if (Input.GetButtonDown("Jump"))
             {
-                zyuuryoku.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
+                rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             }
-
         }
         else
         {
-            Groundtuku = false;
-            anim.SetBool("Jump", true);
+            isGrounded = false;
+            animator.SetBool("Jump", true);
         }
+    }
 
-        // マウス向き
+    private void HandleRotation()
+    {
+        mouseX = Input.GetAxis("Mouse X") * rotateSpeedX * Time.deltaTime;
+        mouseY = Input.GetAxis("Mouse Y") * rotateSpeedY * Time.deltaTime;
 
-        mx = Input.GetAxis("Mouse X");
-        my = Input.GetAxis("Mouse Y");
+        transform.Rotate(-mouseY, mouseX, 0);
 
-        mx += mx * xkaitensokudo * Time.deltaTime;
-        my += my * ykaitensokudo * Time.deltaTime;
-
-        transform.Rotate(-my, mx, 0);
-
-        muki = transform.eulerAngles;
-
-        if (muki.x > downseigen)
+        Vector3 rotation = transform.eulerAngles;
+        if (rotation.x > angleLimitDown)
         {
-            if (muki.x > 180f)
-            {
-
-                if (upseigen > muki.x)
-                {
-
-                    muki.x = upseigen;
-                }
-            }
+            if (rotation.x > 180f && angleLimitUp > rotation.x)
+                rotation.x = angleLimitUp;
             else
-            {
-                muki.x = downseigen;
-            }
-
+                rotation.x = angleLimitDown;
         }
 
-        muki.z = 0f;
-
-        transform.eulerAngles = muki;
+        rotation.z = 0f;
+        transform.eulerAngles = rotation;
     }
 
-    void OnAnimatorIK()
+    private IEnumerator ComboEndRoutine()
     {
-        if (Groundtuku == true)
-        {
-            // 浮いていない時の処理
-            anim = GetComponent<Animator>();
-            float idouryou = anim.GetFloat("MoveSpeed");
-
-
-            rayiti = FootObjectR.position;
-
-            Physics.Raycast(rayiti, rayhoukou, out rayzyouhou, 1f);
-
-            raydistance = rayzyouhou.distance;
-
-            float raykeisan1 = rayiti.y - raydistance + 0.12f;
-
-            FootObjectR.position = new Vector3(rayiti.x, raykeisan1, rayiti.z);
-
-
-            // 右足のIKを有効化
-
-            if (idouryou == 0)
-            {
-                anim.SetIKPositionWeight(AvatarIKGoal.RightFoot, 1.0f);
-            }
-            else
-            {
-                anim.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0.02f);
-            }
-
-            anim.SetIKRotationWeight(AvatarIKGoal.RightFoot, 1.0f);
-
-            // 右足のIKのターゲットを設定
-            anim.SetIKPosition(AvatarIKGoal.RightFoot, FootObjectR.position);
-            anim.SetIKRotation(AvatarIKGoal.RightFoot, FootObjectR.rotation);
-
-            rayiti = FootObjectL.position;
-
-            Physics.Raycast(rayiti, rayhoukou, out rayzyouhou, 1f);
-
-            raydistance = rayzyouhou.distance;
-            raykeisan1 = rayiti.y - raydistance + 0.11f;
-
-            FootObjectL.position = new Vector3(rayiti.x, raykeisan1, rayiti.z);
-
-
-            // 左足のIKを有効化
-
-            if (idouryou == 0)
-            {
-                anim.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1.0f);
-            }
-            else
-            {
-                anim.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0.02f);
-            }
-
-            anim.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 1.0f);
-
-            // 左足のIKのターゲットを設定
-            anim.SetIKPosition(AvatarIKGoal.LeftFoot, FootObjectL.position);
-            anim.SetIKRotation(AvatarIKGoal.LeftFoot, FootObjectL.rotation);
-        }
+        yield return new WaitForSeconds(comboEndDelay);
+        canAttack = true;
+        Debug.Log("Combo ended");
     }
 
-    IEnumerator Dashowari()
+    #region AnimationEvents
+    private void AttackStart()
     {
-        // ダッシュを終わらせる  
-
-        yield return new WaitForSeconds(dashtime);
-        anim = GetComponent<Animator>();
-
-        zyuuryoku = GetComponent<Rigidbody>(); //Rigidbodyのコンポーネントを取得
-        zyuuryoku.linearVelocity = Vector3.zero;
-
-
-        // ダッシュクールタイムだけ待機  
-        yield return new WaitForSeconds(dashcool);
-        dashkyoka = true;
-
+        if (attackState == 10f)
+            fireTrail.emitting = true;
+        else if (attackState > 0 && attackState < 5)
+            trail.emitting = true;
     }
 
-    IEnumerator ComboEnd()
+    private void Hit()
     {
-        // コンボ終了時待機  
-        yield return new WaitForSeconds(ComboEndtime);
-        Attackdekiru = true;
-        Debug.Log("ComboEnd実行");
-    }
-
-    void FootR()
-    {
-        //本当はここに足音入れる
-    }
-
-    void FootL()
-    {
-        //本当はここに足音入れる
-    }
-
-    void AttackStart()
-    {
-        //ファイアアタックか通常攻撃か条件分岐
-
-        Attack = anim.GetFloat("Attack");
-        if (Attack == 10f)
-        {
-
-            Kiseki2.emitting = true;
-
-        }
-        if (Attack > 0 && Attack < 5)
-        {
-
-
-            Kiseki.emitting = true;
-        }
-    }
-
-    void Hit()
-    {
-        //攻撃終了
-        //ファイアアタックか通常攻撃かで条件分岐
-
-        Attack = anim.GetFloat("Attack");
-        if (Attack == 10f)
-        {
-
-            Kiseki2.emitting = false;
-        }
+        if (attackState == 10f)
+            fireTrail.emitting = false;
         else
         {
-            Combo = true;
-
-
-
-            Kiseki.emitting = false;
+            comboAvailable = true;
+            trail.emitting = false;
         }
     }
 
-    void AttackEnd()
+    private void AttackEnd()
     {
-        //攻撃アニメーション終了時の処理
-        Combo = false;
+        comboAvailable = false;
+        animator.SetFloat("Attack", 0f);
 
-        Attack = anim.GetFloat("Attack");
-        anim.SetFloat("Attack", 0f);
-        //通常攻撃4回目終了
-        if (Attack == 4f)
+        if (attackState == 4f || attackState == 10f)
         {
-            anim.SetFloat("Attack", 0f);
-            Attackdekiru = false;
-            StartCoroutine(ComboEnd());
+            canAttack = false;
+            fireEffect.Stop();
+            StartCoroutine(ComboEndRoutine());
         }
-        //ファイアアタック終了
-        if (Attack == 10f)
-        {
-            Fire1 = FireAttack1Object.GetComponent<ParticleSystem>();
-            Fire1.Stop();
+    }
+    #endregion
 
-            anim.SetFloat("Attack", 0f);
+    private void OnAnimatorIK()
+    {
+        if (!isGrounded) return;
 
-            StartCoroutine(ComboEnd());
-        }
+        float moveSpeed = animator.GetFloat("MoveSpeed");
 
+        ApplyFootIK(AvatarIKGoal.RightFoot, rightFootTarget, moveSpeed);
+        ApplyFootIK(AvatarIKGoal.LeftFoot, leftFootTarget, moveSpeed);
     }
 
+    private void ApplyFootIK(AvatarIKGoal foot, Transform footTarget, float moveSpeed)
+    {
+        if (Physics.Raycast(footTarget.position, Vector3.down, out RaycastHit hit, 1f))
+        {
+            Vector3 adjustedPos = new Vector3(footTarget.position.x, footTarget.position.y - hit.distance + 0.12f, footTarget.position.z);
+            footTarget.position = adjustedPos;
+
+            animator.SetIKPositionWeight(foot, moveSpeed == 0 ? 1f : 0.02f);
+            animator.SetIKRotationWeight(foot, 1f);
+            animator.SetIKPosition(foot, footTarget.position);
+            animator.SetIKRotation(foot, footTarget.rotation);
+        }
+    }
 }
