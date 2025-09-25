@@ -1260,6 +1260,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 148384934}
     - target: {fileID: 292453325331237136, guid: 4eb69c0e9f0667d4cb8b76ce6b9f7360, type: 3}
+      propertyPath: angleLimitUp
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 292453325331237136, guid: 4eb69c0e9f0667d4cb8b76ce6b9f7360, type: 3}
+      propertyPath: rotateSpeedX
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 292453325331237136, guid: 4eb69c0e9f0667d4cb8b76ce6b9f7360, type: 3}
+      propertyPath: rotateSpeedY
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 292453325331237136, guid: 4eb69c0e9f0667d4cb8b76ce6b9f7360, type: 3}
+      propertyPath: angleLimitDown
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 292453325331237136, guid: 4eb69c0e9f0667d4cb8b76ce6b9f7360, type: 3}
       propertyPath: leftFootTarget
       value: 
       objectReference: {fileID: 1076354852}
@@ -1321,6 +1337,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4714772626272771150, guid: 4eb69c0e9f0667d4cb8b76ce6b9f7360, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8167775791581103678, guid: 4eb69c0e9f0667d4cb8b76ce6b9f7360, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
+    - target: {fileID: 8167775791581103678, guid: 4eb69c0e9f0667d4cb8b76ce6b9f7360, type: 3}
+      propertyPath: m_IsKinematic
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
