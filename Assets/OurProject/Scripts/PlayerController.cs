@@ -5,7 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Components")]
     private Animator animator;
-    private Rigidbody rigidbody;
+    private Rigidbody rb;
 
     [Header("Movement Settings")]
     [SerializeField] private float normalSpeed = 6f;
@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        rigidbody = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -123,14 +123,14 @@ public class PlayerController : MonoBehaviour
         // First attack (左クリック)
         if (!comboAvailable && attackState == 0 && Input.GetMouseButtonDown(0))
         {
-            rigidbody.linearVelocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             animator.SetFloat("Attack", 1f);
         }
 
         // Combo attack (左クリック)
         if (comboAvailable && Input.GetMouseButtonDown(0) && attackState < 4)
         {
-            rigidbody.linearVelocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             comboAvailable = false;
             attackState += 1f;
             animator.SetFloat("Attack", attackState);
@@ -139,7 +139,7 @@ public class PlayerController : MonoBehaviour
         // Fire attack (右クリック)
         if (comboAvailable && Input.GetMouseButtonDown(1))
         {
-            rigidbody.linearVelocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             animator.SetFloat("Attack", 10f);
             canAttack = false;
             comboAvailable = false;
@@ -158,7 +158,7 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;  // 移動方向ベクトル (正規化 → 距離調整)
             // Transform.TransformDirection(direction): ローカル方向 (プレイヤ正面) → ワールド方向
-            rigidbody.AddForce(transform.TransformDirection(direction) * dashPower, ForceMode.Impulse);
+            rb.AddForce(transform.TransformDirection(direction) * dashPower, ForceMode.Impulse);
             canDash = false;
             StartCoroutine(DashRoutine());
         }
@@ -171,7 +171,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator DashRoutine()
     {
         yield return new WaitForSeconds(dashDuration);  // ダッシュ持続時間待機
-        rigidbody.linearVelocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
 
         yield return new WaitForSeconds(dashCooldown);  // ダッシュクールタイム待機
         canDash = true;
@@ -191,7 +191,7 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetButtonDown("Jump"))
             {
-                rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);  // ジャンプ
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);  // ジャンプ
             }
         }
         else   // 空中
