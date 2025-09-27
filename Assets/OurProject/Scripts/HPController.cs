@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class HPController : MonoBehaviour, IDamageable
+public class HPController : MonoBehaviour, IDamage
 {
     [SerializeField] private CharacterStatus charaStatus;   // キャラステータス
     [SerializeField] private Slider hpSlider;   // HP バー

@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿public enum EnemyState
+{
+    Idle = 0,   // 待機
+    Attack = 1  // 近距離攻撃
+}
 
 public interface IEnemy
 {
-    public int EnemyAIkoudou();
-
-
+    EnemyState GetAIAction();
 }

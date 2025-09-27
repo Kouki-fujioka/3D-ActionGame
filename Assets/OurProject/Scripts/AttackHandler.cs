@@ -31,7 +31,7 @@ public class AttackHandler : MonoBehaviour
             return;
         }
 
-        IDamageable damageable = other.GetComponent<IDamageable>();
+        IDamage damageable = other.GetComponent<IDamage>();
         if (damageable == null)
         {
             return;

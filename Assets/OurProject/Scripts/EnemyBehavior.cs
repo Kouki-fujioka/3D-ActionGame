@@ -7,17 +7,11 @@ public class EnemyBehavior : MonoBehaviour, IEnemy
 
     private Vector3 distanceFromPlayer;
 
-    private enum EnemyState
-    {
-        Idle = 0,   // 待機
-        Attack = 1  // 近距離攻撃
-    }
-
     /// <summary>
     /// 敵 AI 行動取得
     /// </summary>
     /// <returns></returns>
-    public int GetAIAction()
+    public EnemyState GetAIAction() // EnemyState: 同アセンブリ, トップレベル (名前空間未定義) → using 不要
     {
         distanceFromPlayer = GetDistanceFromPlayer();
 
@@ -25,10 +19,10 @@ public class EnemyBehavior : MonoBehaviour, IEnemy
 
         if (maxAxisDistance <= enemyStatus.ShortAttackRange)    // 攻撃範囲内
         {
-            return (int)EnemyState.Attack;
+            return EnemyState.Attack;
         }
 
-        return (int)EnemyState.Idle;
+        return EnemyState.Idle;
     }
 
     /// <summary>

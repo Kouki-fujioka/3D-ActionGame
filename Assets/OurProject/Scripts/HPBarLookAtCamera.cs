@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class HealthBarLookAtCamera : MonoBehaviour
+public class HPBarLookAtCamera : MonoBehaviour
 {
     [SerializeField] private Canvas healthBarCanvas;
     private Transform mainCameraTransform;
