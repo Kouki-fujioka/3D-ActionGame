@@ -4,7 +4,7 @@ using UnityEngine;
 public class EnemyStateController : MonoBehaviour
 {
     [SerializeField] private CharacterStatus enemyStatus;
-    [SerializeField] private IEnemy enemyBehavior;
+    [SerializeField] private EnemyBehavior enemyBehavior;
 
     private Animator animator;
     private static class AnimatorParams
@@ -43,7 +43,7 @@ public class EnemyStateController : MonoBehaviour
     }
 
     /// <summary>
-    /// 敵 AI 行動実行
+    /// 敵 AI 行動実行 (並列処理)
     /// </summary>
     private IEnumerator PerformAction()
     {

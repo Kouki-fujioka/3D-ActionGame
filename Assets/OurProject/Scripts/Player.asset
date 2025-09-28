@@ -10,16 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d985a021abc1a12429eb37eb28115d63, type: 3}
-  m_Name: Player 1
+  m_Name: Player
   m_EditorClassIdentifier: 
-  NAME: "\u4E3B\u4EBA\u516C\uFF11"
-  MAXHP: 1300
-  MAXMP: 150
-  ATK: 800
-  DEF: 350
-  INT: 700
-  RES: 250
-  AGI: 350
-  LV: 1
-  GETEXP: 1
-  GETGOLD: 1
+  CharacterName: Player
+  Level: 1
+  MaxHP: 1300
+  MaxMP: 150
+  Attack: 800
+  Defense: 350
+  MagicPower: 700
+  MagicResistance: 250
+  MoveSpeed: 350
+  ExperienceReward: 1
+  GoldReward: 1
+  ShortAttackRange: 0
+  ActionInterval: 0
+  DetectPlayerRange: 0
+  WanderDistanceMin: 0
+  WanderDistanceMax: 0
+  WanderInterval: 0
+  WanderMoveSpeed: 0

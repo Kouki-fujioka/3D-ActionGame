@@ -4,13 +4,13 @@ public class AttackHandler : MonoBehaviour
 {
     [SerializeField] private CharacterStatus attackerStatus;    // 攻撃実行キャラステータス
     [SerializeField] private GameObject attackerObject; // 攻撃実行キャラ
-    private int attackPower;
     private IAttack hitCounter;
+    private int attackPower;
 
     private void Awake()
     {
-        attackPower = attackerStatus.Attack;
         hitCounter = attackerObject.GetComponent<IAttack>();
+        attackPower = attackerStatus.Attack;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -21,6 +21,7 @@ public class AttackHandler : MonoBehaviour
         }
 
         int remainingHits = hitCounter.GetRemainingHitCount();
+
         if (remainingHits <= 0)
         {
             return;
@@ -31,13 +32,14 @@ public class AttackHandler : MonoBehaviour
             return;
         }
 
-        IDamage damageable = other.GetComponent<IDamage>();
-        if (damageable == null)
+        IDamage hpController = other.GetComponent<IDamage>();
+
+        if (hpController == null)
         {
             return;
         }
 
         hitCounter.DecreaseRemainingHitCount();
-        damageable.Damage(attackPower);
+        hpController.Damage(attackPower);
     }
 }

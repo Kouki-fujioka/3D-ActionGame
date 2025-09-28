@@ -52,10 +52,12 @@ public class EnemySwordAttack : MonoBehaviour, IAttack
         }
     }
 
+    #region AnimationEvents
+
     /// <summary>
-    /// 攻撃開始時処理
+    /// 攻撃開始時
     /// </summary>
-    public void StartAttack()
+    public void AttackStart()
     {
         if (trailRenderer != null)
         {
@@ -69,9 +71,9 @@ public class EnemySwordAttack : MonoBehaviour, IAttack
     }
 
     /// <summary>
-    /// 攻撃ヒット時処理
+    /// 斬撃終了時
     /// </summary>
-    public void OnHit()
+    public void Hit()
     {
         if (trailRenderer != null)
         {
@@ -83,11 +85,13 @@ public class EnemySwordAttack : MonoBehaviour, IAttack
     }
 
     /// <summary>
-    /// 攻撃終了時処理
+    /// 攻撃終了時
     /// </summary>
-    public void EndAttack()
+    public void AttackEnd()
     {
         animator.SetInteger("Attack", 0);   // 攻撃アニメーション終了
         isAttacking = false;
     }
+
+    #endregion
 }

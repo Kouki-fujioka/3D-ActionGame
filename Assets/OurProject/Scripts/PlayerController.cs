@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded = true;
 
     [Header("Dash Settings")]
-    [SerializeField] private float dashPower = 3f;
+    [SerializeField] private float dashPower = 1500f;
     [SerializeField] private float dashDuration = 0.3f;
     [SerializeField] private float dashCooldown = 1.5f;
     private bool canDash = true;
@@ -42,8 +42,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Effects")]
     [SerializeField] private GameObject trailObject;
-    [SerializeField] private GameObject fireAttackObject;
     [SerializeField] private GameObject fireTrailObject;
+    [SerializeField] private GameObject fireParticleObject;
     private TrailRenderer trail;
     private TrailRenderer fireTrail;
     private ParticleSystem fireEffect;
@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviour
         fireTrail = fireTrailObject.GetComponent<TrailRenderer>();
         fireTrail.emitting = false; // トレイル描画停止
 
-        fireEffect = fireAttackObject.GetComponent<ParticleSystem>();
+        fireEffect = fireParticleObject.GetComponent<ParticleSystem>();
         fireEffect.Stop();  // パーティクル再生停止
     }
 
@@ -191,7 +191,7 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetButtonDown("Jump"))
             {
-                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);  // ジャンプ
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);  // ジャンプ (ワールド空間上方向)
             }
         }
         else   // 空中
@@ -218,37 +218,66 @@ public class PlayerController : MonoBehaviour
     }
 
     #region AnimationEvents
+
+    /// <summary>
+    /// 攻撃開始時
+    /// </summary>
     private void AttackStart()
     {
         if (attackState == 10f)
-            fireTrail.emitting = true;
+            fireTrail.emitting = true;  // トレイル描画再生
         else if (attackState > 0 && attackState < 5)
-            trail.emitting = true;
+            trail.emitting = true;  // トレイル描画再生
     }
 
+    /// <summary>
+    /// 斬撃終了時
+    /// </summary>
     private void Hit()
     {
         if (attackState == 10f)
-            fireTrail.emitting = false;
+        {
+            fireTrail.emitting = false; // トレイル描画停止
+        }
         else
         {
             comboAvailable = true;
-            trail.emitting = false;
+            trail.emitting = false; // トレイル描画停止
         }
     }
 
+    /// <summary>
+    /// 攻撃終了時
+    /// </summary>
     private void AttackEnd()
     {
         comboAvailable = false;
-        animator.SetFloat("Attack", 0f);
+        animator.SetFloat("Attack", 0f);    // 攻撃アニメーション終了
 
         if (attackState == 4f || attackState == 10f)
         {
             canAttack = false;
-            fireEffect.Stop();
+            fireEffect.Stop();  // パーティクル再生停止
             StartCoroutine(ComboEndRoutine());
         }
     }
+
+    /// <summary>
+    /// 右足着地時
+    /// </summary>
+    private void FootR()
+    {
+        // 足音
+    }
+
+    /// <summary>
+    /// 左足着地時
+    /// </summary>
+    private void FootL()
+    {
+        // 足音
+    }
+
     #endregion
 
     /// <summary>
