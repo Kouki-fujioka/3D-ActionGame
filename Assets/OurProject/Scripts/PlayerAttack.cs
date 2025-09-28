@@ -2,23 +2,41 @@
 
 public class PlayerAttack : MonoBehaviour
 {
-    [SerializeField] private charadata charadata;
+    [SerializeField] private CharacterStatus playerStatus;
 
-    void OnTriggerEnter(Collider other)
+    private const string PlayerTag = "Player";
+
+    private void OnTriggerEnter(Collider other)
     {
-        // "Player" タグが付いているならスキップ
-        if (other.CompareTag("Player"))
+        if (IsPlayer(other))
         {
             return;
         }
 
-        // other のゲームオブジェクトのインターフェースを呼び出す
-        IDamageable damageable = other.GetComponent<IDamageable>();
+        ApplyDamageIfPossible(other);
+    }
+
+    /// <summary>
+    /// 判定 (プレイヤ)
+    /// </summary>
+    /// <param name="collider"></param>
+    /// <returns></returns>
+    private bool IsPlayer(Collider collider)
+    {
+        return collider.CompareTag(PlayerTag);
+    }
+
+    /// <summary>
+    /// ダメージ適用
+    /// </summary>
+    /// <param name="collider"></param>
+    private void ApplyDamageIfPossible(Collider collider)
+    {
+        IDamage damageable = collider.GetComponent<IDamage>();
 
         if (damageable != null)
         {
-            // ダメージ処理を実行
-            damageable.Damage(charadata.ATK);
+            damageable.Damage(playerStatus.Attack);
         }
     }
 }

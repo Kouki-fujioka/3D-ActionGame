@@ -5,7 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Components")]
     private Animator animator;
-    private Rigidbody rigidbody;
+    private Rigidbody rb;
 
     [Header("Movement Settings")]
     [SerializeField] private float normalSpeed = 6f;
@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded = true;
 
     [Header("Dash Settings")]
-    [SerializeField] private float dashPower = 3f;
+    [SerializeField] private float dashPower = 1500f;
     [SerializeField] private float dashDuration = 0.3f;
     [SerializeField] private float dashCooldown = 1.5f;
     private bool canDash = true;
@@ -42,8 +42,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Effects")]
     [SerializeField] private GameObject trailObject;
-    [SerializeField] private GameObject fireAttackObject;
     [SerializeField] private GameObject fireTrailObject;
+    [SerializeField] private GameObject fireParticleObject;
     private TrailRenderer trail;
     private TrailRenderer fireTrail;
     private ParticleSystem fireEffect;
@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        rigidbody = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviour
         fireTrail = fireTrailObject.GetComponent<TrailRenderer>();
         fireTrail.emitting = false; // トレイル描画停止
 
-        fireEffect = fireAttackObject.GetComponent<ParticleSystem>();
+        fireEffect = fireParticleObject.GetComponent<ParticleSystem>();
         fireEffect.Stop();  // パーティクル再生停止
     }
 
@@ -123,14 +123,14 @@ public class PlayerController : MonoBehaviour
         // First attack (左クリック)
         if (!comboAvailable && attackState == 0 && Input.GetMouseButtonDown(0))
         {
-            rigidbody.linearVelocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             animator.SetFloat("Attack", 1f);
         }
 
         // Combo attack (左クリック)
         if (comboAvailable && Input.GetMouseButtonDown(0) && attackState < 4)
         {
-            rigidbody.linearVelocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             comboAvailable = false;
             attackState += 1f;
             animator.SetFloat("Attack", attackState);
@@ -139,7 +139,7 @@ public class PlayerController : MonoBehaviour
         // Fire attack (右クリック)
         if (comboAvailable && Input.GetMouseButtonDown(1))
         {
-            rigidbody.linearVelocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             animator.SetFloat("Attack", 10f);
             canAttack = false;
             comboAvailable = false;
@@ -158,7 +158,7 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;  // 移動方向ベクトル (正規化 → 距離調整)
             // Transform.TransformDirection(direction): ローカル方向 (プレイヤ正面) → ワールド方向
-            rigidbody.AddForce(transform.TransformDirection(direction) * dashPower, ForceMode.Impulse);
+            rb.AddForce(transform.TransformDirection(direction) * dashPower, ForceMode.Impulse);
             canDash = false;
             StartCoroutine(DashRoutine());
         }
@@ -171,7 +171,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator DashRoutine()
     {
         yield return new WaitForSeconds(dashDuration);  // ダッシュ持続時間待機
-        rigidbody.linearVelocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
 
         yield return new WaitForSeconds(dashCooldown);  // ダッシュクールタイム待機
         canDash = true;
@@ -191,7 +191,7 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetButtonDown("Jump"))
             {
-                rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);  // ジャンプ
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);  // ジャンプ (ワールド空間上方向)
             }
         }
         else   // 空中
@@ -218,37 +218,66 @@ public class PlayerController : MonoBehaviour
     }
 
     #region AnimationEvents
+
+    /// <summary>
+    /// 攻撃開始時
+    /// </summary>
     private void AttackStart()
     {
         if (attackState == 10f)
-            fireTrail.emitting = true;
+            fireTrail.emitting = true;  // トレイル描画再生
         else if (attackState > 0 && attackState < 5)
-            trail.emitting = true;
+            trail.emitting = true;  // トレイル描画再生
     }
 
+    /// <summary>
+    /// 斬撃終了時
+    /// </summary>
     private void Hit()
     {
         if (attackState == 10f)
-            fireTrail.emitting = false;
+        {
+            fireTrail.emitting = false; // トレイル描画停止
+        }
         else
         {
             comboAvailable = true;
-            trail.emitting = false;
+            trail.emitting = false; // トレイル描画停止
         }
     }
 
+    /// <summary>
+    /// 攻撃終了時
+    /// </summary>
     private void AttackEnd()
     {
         comboAvailable = false;
-        animator.SetFloat("Attack", 0f);
+        animator.SetFloat("Attack", 0f);    // 攻撃アニメーション終了
 
         if (attackState == 4f || attackState == 10f)
         {
             canAttack = false;
-            fireEffect.Stop();
+            fireEffect.Stop();  // パーティクル再生停止
             StartCoroutine(ComboEndRoutine());
         }
     }
+
+    /// <summary>
+    /// 右足着地時
+    /// </summary>
+    private void FootR()
+    {
+        // 足音
+    }
+
+    /// <summary>
+    /// 左足着地時
+    /// </summary>
+    private void FootL()
+    {
+        // 足音
+    }
+
     #endregion
 
     /// <summary>

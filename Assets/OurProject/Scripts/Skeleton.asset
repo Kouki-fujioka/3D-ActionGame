@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d985a021abc1a12429eb37eb28115d63, type: 3}
-  m_Name: Mazokusoldier
+  m_Name: Skeleton
   m_EditorClassIdentifier: 
-  NAME: "\u9B54\u65CF\u4E00\u822C\u5175"
-  MAXHP: 843
-  MAXMP: 50
-  ATK: 500
-  DEF: 300
-  INT: 200
-  RES: 300
-  AGI: 350
-  LV: 1
-  GETEXP: 10
-  GETGOLD: 5
+  CharacterName: Skeleton
+  Level: 1
+  MaxHP: 1000
+  MaxMP: 50
+  Attack: 500
+  Defense: 300
+  MagicPower: 200
+  MagicResistance: 300
+  MoveSpeed: 350
+  ExperienceReward: 10
+  GoldReward: 5
   ShortAttackRange: 2
-  Enemytime: 0.5
-  Haikaikyori: 15
-  Haikaikankaku: 3
-  Haikaimin: 3
-  Haikaimax: 8
-  HaikaiAGI: 200
+  ActionInterval: 0.5
+  DetectPlayerRange: 15
+  WanderDistanceMin: 3
+  WanderDistanceMax: 8
+  WanderInterval: 3
+  WanderMoveSpeed: 200

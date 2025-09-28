@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public interface IDamageable
+﻿public interface IDamage
 {
     public void Damage(int value);
     public void Death();
