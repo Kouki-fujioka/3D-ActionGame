@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d985a021abc1a12429eb37eb28115d63, type: 3}
+  m_Name: Skeleton
+  m_EditorClassIdentifier: 
+  CharacterName: Skeleton
+  Level: 1
+  MaxHP: 1000
+  MaxMP: 50
+  Attack: 500
+  Defense: 300
+  MagicPower: 200
+  MagicResistance: 300
+  MoveSpeed: 350
+  ExperienceReward: 10
+  GoldReward: 5
+  ShortAttackRange: 2
+  ActionInterval: 0.5
+  DetectPlayerRange: 15
+  WanderDistanceMin: 3
+  WanderDistanceMax: 8
+  WanderInterval: 3
+  WanderMoveSpeed: 200
